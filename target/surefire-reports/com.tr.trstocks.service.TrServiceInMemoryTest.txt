@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: com.tr.trstocks.service.TrServiceInMemoryTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.385 s <<< FAILURE! - in com.tr.trstocks.service.TrServiceInMemoryTest
+getCandleSticks  Time elapsed: 0.08 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <6> but was: <1>
+	at com.tr.trstocks.service.TrServiceInMemoryTest.getCandleSticks(TrServiceTest.java:112)
+

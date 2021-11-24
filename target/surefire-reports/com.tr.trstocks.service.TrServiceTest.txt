@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------------
+Test set: com.tr.trstocks.service.TrServiceTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 4, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in com.tr.trstocks.service.TrServiceTest
+getStockAdd  Time elapsed: 0 s  <<< ERROR!
+java.lang.NoSuchMethodError: com.tr.trstocks.service.TrService.getStock(Ljava/lang/String;)Lcom/tr/trstocks/beans/Stock;
+	at com.tr.trstocks.service.TrServiceTest.getStockAdd(TrServiceTest.java:36)
+
+getCandleSticks  Time elapsed: 0.001 s  <<< ERROR!
+java.lang.NoSuchMethodError: com.tr.trstocks.service.TrService.getCandleSticks(Ljava/lang/String;)Ljava/util/List;
+	at com.tr.trstocks.service.TrServiceTest.getCandleSticks(TrServiceTest.java:109)
+
+getStockQuote  Time elapsed: 0 s  <<< ERROR!
+java.lang.NoSuchMethodError: com.tr.trstocks.service.TrService.getStock(Ljava/lang/String;)Lcom/tr/trstocks/beans/Stock;
+	at com.tr.trstocks.service.TrServiceTest.getStockQuote(TrServiceTest.java:51)
+
+getStockDelete  Time elapsed: 0 s  <<< ERROR!
+java.lang.NoSuchMethodError: com.tr.trstocks.service.TrService.getStock(Ljava/lang/String;)Lcom/tr/trstocks/beans/Stock;
+	at com.tr.trstocks.service.TrServiceTest.getStockDelete(TrServiceTest.java:76)
+
