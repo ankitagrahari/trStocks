@@ -195,3 +195,46 @@ The following questions will give you a hint on what to think about for the code
 
 - How would you change the system to provide scaling capabilities to 50.000 (or more) available instruments, each streaming quotes between once per second and every few seconds?
 - How could this system be build in a way that supports failover capabilities so that multiple instances of the system could run simultaneously?
+
+
+## My Approach
+
+I will start with assumptions, then the endpoints exposed with the approaches and why it is used.
+
+#### Assumption:
+I am using Java instead of kotlin. I have encountered WebSocket programs for the first time, so it was a bit difficult to get the data from server properly. I was able to collect the data from the websocket server using the Netty configuration. Referred this https://github.com/netty/netty/blob/4.1/example/src/main/java/io/netty/example/http/websocketx/client/WebSocketClient.java piece of code and did some modification to make it work for my project. 
+
+I have created Rest Service in Spring boot application with endpoints like /candlestick?isin=ABC or /db/candlestick?isin=ABC to get the list of recent 30 candles from an in-memory data structure and other approach is to get the data from MongoDB.
+
+#### Endpoints:
+##### Microservice 1( On Port 9000 ): To get the data from Partner Websocket server and utilise below service:
+
+	- /startInstruments  - start receiving the data from WebSocket server ws://localhost:8032/instruments
+	- /startQuotes		 - start receiving the data from WebSocket server ws://localhost:8032/quotes
+	- /candlesticks		 - get the latest 30 min candles from Memory
+	- /db/candlesticks	 - get the latest 30 min candles from MongoDB
+	- Junit5 is used to write the test cases here.
+
+##### Microservice 2(On Port 9001): Specifcally for database operations
+
+	- /store			 - to Store Data object in the Memory (concurrentHashMap)
+	- /store/db			 - to Store Data object in the MongoDB 
+	- /data?isin=""		 - get the Data object list for a specific instruments
+	- /db/all			 - get the entire list of Data objects which is stored in DB.
+	- Junit5 and StepVerifier is used to wrote the test cases on Services.
+
+##### Approach:
+I have used two approaches where the dataset is stored in either the in-memory or stored in the database. 
+##### Approach-1:
+		In memory Concurrent HashMap, which will keep the records for the quotes and will remove the entry if the Type is Delete. 
+		- In this approach I was able to collect the data set in a concurrent Map where the records will be 
+			-inserted if Type:ADD is encountered
+			-deleted from Map, if Type:DELETE is encountered
+			-for Type:Quote, I am using the Map with String as Key and List<Data> as the Value. Now any isin which is already receieved will already be there in the map, and for this collision, I will add the new entry to the last of the list. This way I can track the last 30 candles for the output. Also candles for 1 min are created by adding timeInMillis attribute to the Data entity. the code is present here Service.getCandleSticks().
+		- Conclusion: I was able to read the data from Websocket server and was able to convert the received data to Stock Object, and store it in the concurrent map. The issue I am facing is to get the WebSocketHandler class autowired, so that for each request it doesn't create a new Service instance which is causing the MAP to loose the previous data. Because of this the data stored cannot be shared with other controllers. To tackle this, I wanted to store it in a serialized file on the local disk, but it will be very time consuming in reading the data from file. Another approach was to use SessionAttributes to keep the Map in session.
+	
+##### Approach-2:
+		- So, I tried using Reactive MonogDB to store the data in collections.
+		- Here the same WebSocketHandler will call the api to store the emitted data to MongoDb. 
+		- There are set of services which will fetch data based on isin, or delete the records with a specific isin. 
+		- To get the latest 30 candles, it used the same logic as used in Approach-1. 
