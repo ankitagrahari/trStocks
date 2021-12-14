@@ -1,19 +1,21 @@
 package com.tr.datakeeper.service;
 
 import com.tr.datakeeper.dto.DataDto;
-import com.tr.datakeeper.entity.Data;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 public interface DataService {
 
-    Mono<DataDto> createDataQuote(Mono<DataDto> data);
+    DataDto saveDataQuote(DataDto data);
 
-    Flux<Data> findByIsin(String isin);
+    List<DataDto> findByIsin(String isin);
 
-    Mono<Void> deleteByIsin(String isin);
+    void deleteByIsin(String isin);
 
-    Flux<Data> findAll();
+    Mono<Void> deleteById(String id);
 
-    Mono<Void> deleteAll();
+    List<DataDto> findAll();
+
+    void deleteAll();
 }

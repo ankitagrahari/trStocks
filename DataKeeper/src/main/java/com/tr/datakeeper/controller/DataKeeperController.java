@@ -1,12 +1,11 @@
 package com.tr.datakeeper.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tr.datakeeper.entity.Data;
+import com.tr.datakeeper.dto.DataDto;
 import com.tr.datakeeper.entity.Stock;
 import com.tr.datakeeper.service.DataServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ public class DataKeeperController {
     @Autowired
     private DataServiceImpl dataService;
 
-    static Map<String, List<Data>> IN_MEMORY = new ConcurrentHashMap<>();
+    static Map<String, List<DataDto>> IN_MEMORY = new ConcurrentHashMap<>();
 
     @GetMapping("/greet")
     public String greet(){
@@ -31,20 +30,20 @@ public class DataKeeperController {
         try {
             if (null != payload) {
                 Stock stock = new ObjectMapper().readValue(payload, Stock.class);
-                String isin = stock.getData().getIsin();
-                stock.getData().setTimeMillis(System.currentTimeMillis());
+                String isin = stock.getDataDto().getIsin();
+                stock.getDataDto().setTimeMillis(System.currentTimeMillis());
                 //if found Quote, add the data to the list which will be on the next index
                 if (stock.getType().equalsIgnoreCase("QUOTE")) {
                     if (IN_MEMORY.containsKey(isin)) {
-                        List<Data> temp = IN_MEMORY.get(isin);
-                        temp.add(stock.getData());
+                        List<DataDto> temp = IN_MEMORY.get(isin);
+                        temp.add(stock.getDataDto());
                         IN_MEMORY.put(isin, temp);
                     }
                 } else {
                     //if found Instruments, then based on ADD or DELETE, it will take action
                     if (stock.getType().equalsIgnoreCase("ADD")) {
                         if (!IN_MEMORY.containsKey(isin)) {
-                            IN_MEMORY.put(isin, new ArrayList<Data>());
+                            IN_MEMORY.put(isin, new ArrayList<DataDto>());
                         }
                     } else if (stock.getType().equalsIgnoreCase("DELETE")) {
                         if (!IN_MEMORY.containsKey(isin)) {
@@ -63,9 +62,9 @@ public class DataKeeperController {
     public void storeInDB(@RequestBody Stock stock){
         if(null!=stock) {
             if (stock.getType().equalsIgnoreCase("QUOTE")) {
-                dataService.createDataQuote(stock.getData());
+                dataService.saveDataQuote(stock.getDataDto());
             } else if (stock.getType().equalsIgnoreCase("DELETE")) {
-                dataService.deleteByIsin(stock.getData().getIsin());
+                dataService.deleteByIsin(stock.getDataDto().getIsin());
             }
         } else {
             System.out.println("Store:Not having stock");
@@ -74,13 +73,13 @@ public class DataKeeperController {
 
     @GetMapping("/data")
     @ResponseBody
-    public Flux<Data> getHistoryFromDB(@RequestParam String isin){
+    public List<DataDto> getHistoryFromDB(@RequestParam String isin){
         return dataService.findByIsin(isin);
     }
 
     @GetMapping("/db/all")
     @ResponseBody
-    public Flux<Data> getEntireHistory(){
+    public List<DataDto> getEntireHistory(){
         return dataService.findAll();
     }
 

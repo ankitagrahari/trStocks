@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @lombok.Data
-@Document(value = "Data")
+@Document(value = "ABC")
 public class Data {
 
     @Id
