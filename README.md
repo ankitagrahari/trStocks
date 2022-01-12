@@ -1,9 +1,6 @@
 # trStocks
 Small Project to Handle Stocks Prices and return last 30 days Candles
 
-This question was part of the Hiring Program:
-# TR Coding Challenge
-
 Your task is to build a system that enables users to view price histories. 
 It will receive updates from a partner service, transform these updates and provide the aggregated data through an endpoint.
 
