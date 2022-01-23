@@ -13,5 +13,8 @@ public interface DataRepository extends ReactiveMongoRepository<DataDto, String>
     @Query("{ 'isin': ?0 }")
     Flux<DataDto> findByIsin(String isin);
 
+    @Query(value = "{'isin': ?0}", fields = "{_id : 1}")
+    Mono<DataDto> findDistinctFirstByIsin(String isin);
+
     Mono<Void> deleteById(String id);
 }

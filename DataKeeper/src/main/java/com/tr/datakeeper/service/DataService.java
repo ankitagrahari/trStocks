@@ -11,7 +11,7 @@ public interface DataService {
 
     List<DataDto> findByIsin(String isin);
 
-    void deleteByIsin(String isin);
+    DataDto deleteByIsin(String isin);
 
     Mono<Void> deleteById(String id);
 

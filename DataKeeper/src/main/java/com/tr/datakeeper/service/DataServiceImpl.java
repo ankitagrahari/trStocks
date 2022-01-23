@@ -43,8 +43,12 @@ public class DataServiceImpl implements DataService{
     }
 
     @Override
-    public void deleteByIsin(String isin) {
-//        return dataRepo.
+    public DataDto deleteByIsin(String isin) {
+        DataDto dataDto = dataRepo.findDistinctFirstByIsin(isin).flatMap(
+                dto -> dataRepo.delete(dto)
+                        .then(Mono.just(dto))
+        ).block();
+        return dataDto;
     }
 
     @Override
