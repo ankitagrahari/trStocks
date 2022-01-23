@@ -22,18 +22,21 @@ public class MyWebSocketClientEndpoint {
     }
 
     @OnOpen
+    //Method Name can be anything
     public void onOpen(Session session){
         System.out.println("On Open");
         this.session = session;
     }
 
     @OnClose
+    //Method Name can be anything
     public void onClose(){
         System.out.println("On Close");
         this.session = null;
     }
 
     @OnMessage
+    //Method Name can be anything
     public void onMessage(String message){
         System.out.println("On Message:"+ message);
     }
